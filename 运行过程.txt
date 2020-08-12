@@ -1,0 +1,78 @@
+
+网络编程多线程线程池深入讲解     陈艳男   编程不良人
+//https://www.bilibili.com/video/BV1U7411y7gw?p=5
+
+
+socket00    socket01    socket02    socket03 --------- 讲了socket的几种创建方式
+socket04    socket05                         --------- 讲了线程的几种创建方式
+
+**********************************   step0  最原始的 客户端  服务器 通讯 （服务端单次连接）
+
+运行   socket00/servers/TestServerSocket00
+运行   socket00/clients/TestSocket00
+运行   socket00/clients/TestSocket00
+查看下面的run窗口 看到  两个客户端都连接到服务端了
+最原始的处理发送 接收 数据方法
+服务端没有做其他处理，只可以进行一次客户端连接操作，客户端再连接提示"Connection refused"
+
+
+**********************************  step1  最原始的 客户端  服务器 通讯 （服务端for循环）
+运行   socket/servers/TestServerSocket
+运行   socket/clients/TestSocket
+运行   socket/clients/TestSocket01
+运行   socket/clients/TestSocket01
+运行   socket/clients/TestSocket01
+
+查看下面的run窗口 看到  两个客户端都连接到服务端了
+最原始的处理发送 接收 数据方法
+服务端执行for循环可以不断接受客户端的信息
+
+
+**********************************  step2  使用过滤器封装简化 接收数据处理工作
+运行   socket02/servers/TestServerSocket02
+运行   socket02/clients/TestSocket02
+运行   socket02/clients/TestSocket0202
+运行   socket02/clients/TestSocket0203
+查看下面的run窗口 看到  三个客户端都连接到服务端了
+使用  DataInputStream  封装   InputStream
+     DataOutputStream         OutputStream   处理接受数据方便多了
+
+
+**********************************  step3   各种线程比较
+step 3.1
+
+运行   socket03/serverTest/threadMainTest
+ //创建线程的三种方式
+    //方式一  实现runnable 接口
+    //方式二  继承Thread类
+    //方式三   threadPool
+
+step 3.2
+运行   socket03/servers/TestServerSocket03
+运行   socket03/clients/TestSocket0302
+
+TestServerSocket03   服务端增加多线程支持   将 InputStream inputStream = socket.getInputStream(); 放到 thread=new thread()...
+TestSocket0302       客户端循环发送10000此client请求
+
+
+
+**********************************  step04  ThreadPoolExecutor 创建线程池 ，及其中每个参数的意思 ，用银行柜台比喻很好
+运行   socket04ThreadPool/ThreadPoolTest.java
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(******);
+        //修改i最数据看效果
+        for (int i = 0; i < 5; i++) {
+            threadPoolExecutor.execute(new MyRunnable());
+        }
+
+
+
+**********************************  step05   Executors创建 线程池
+运行   socket05Executors/socket05main.java
+        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
+        ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+        // 以上三个底层都是 ThreadPoolExecutor
+        //执行有连个  ***.execute(*);   ***.submit(*);
+        singleThreadExecutor.execute(new MyRunnable05());
+
+
